@@ -3,8 +3,6 @@ package com.project.libraryManagement.entities;
 import lombok.*;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
@@ -16,7 +14,7 @@ import javax.persistence.Id;
 public class Books {
 
     @Id
-    public long bookId;
+    public Long bookId;
     public String bookName;
     public int stockAvailable;
 }

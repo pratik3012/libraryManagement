@@ -10,11 +10,9 @@ public interface LibraryMgmtService {
 
     List<UsersWithBooks> fetchUsersWithBooks();
 
-    UsersWithBooks fetchUsersWithBooksById(long id);
+    UsersWithBooks fetchUsersWithBooksById(Long id);
 
-    void deleteUsersWithBooksById(Long id);
-
-    UsersWithBooks updateUsersWithBooks(long id, UsersWithBooks usersWithBooks);
+    String deleteUsersWithBooksById(Long id);
 
     List<UsersWithBooks> fetchUsersWithBooksByName(String name);
 
@@ -22,5 +20,7 @@ public interface LibraryMgmtService {
 
     String saveBooks(Books books);
 
-    boolean subscribeBook(long bookId);
+    boolean subscribeBook(Long bookId);
+
+    boolean unSubscribeBook(Long bookId);
 }

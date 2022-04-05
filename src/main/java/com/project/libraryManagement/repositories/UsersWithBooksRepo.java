@@ -9,6 +9,4 @@ import java.util.List;
 @Repository
 public interface UsersWithBooksRepo extends JpaRepository<UsersWithBooks, Long> {
     List<UsersWithBooks> findByUserNameIgnoreCase(String name);
-    UsersWithBooks findByBookId(long bookId);
-    void deleteByBookId(Long id);
 }

@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -19,10 +18,10 @@ public class UsersWithBooks {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public int subscriptionId;
+    public Long subscriptionId;
     public String userName;
 
-    @NotBlank(message = "Book Id cannot be blank!")
-    public long bookId;
+    @NotNull(message = "Book Id is mandatory!")
+    public Long bookId;
 
 }

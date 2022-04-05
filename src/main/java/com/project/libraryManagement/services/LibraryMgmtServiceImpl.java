@@ -7,9 +7,7 @@ import com.project.libraryManagement.repositories.UsersWithBooksRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -23,24 +21,24 @@ public class LibraryMgmtServiceImpl implements LibraryMgmtService{
 
     @Override
     public String saveUsersWithBooks(UsersWithBooks usersWithBooks) {
-        List<UsersWithBooks> usersWithBooksList = new ArrayList<>();
-        usersWithBooksList = usersWithBooksRepo.findByUserNameIgnoreCase(usersWithBooks.getUserName());
+        List<UsersWithBooks> usersWithBooksList = usersWithBooksRepo.findByUserNameIgnoreCase(usersWithBooks.getUserName());
+        Optional<Books> booksOptional = booksRepo.findById(usersWithBooks.getBookId());
 
         if(usersWithBooksList.size() < 2){
-            if(subscribeBook(usersWithBooks.getBookId())){
-                UsersWithBooks usersWithBooksDB = usersWithBooksRepo.findByBookId(usersWithBooks.getBookId());
-                if(null == usersWithBooksDB){
+            if(booksOptional.isPresent() && booksOptional.get().getStockAvailable() > 0){
+                if((0 == usersWithBooksList.size() || !usersWithBooks.getBookId().equals(usersWithBooksList.get(0).getBookId()))
+                    && subscribeBook(usersWithBooks.getBookId())){
                     usersWithBooksRepo.save(usersWithBooks);
-                    return "Subscribed successfully!";
+                    return "Book borrowed successfully!";
                 }
                 else
-                    return "You have already subscribed this book!";
+                    return "You have already borrowed this book!";
             }
             else
                 return "Stock of this book is unavailable!";
         }
         else
-            return "You have reached the subscription limit!";
+            return "You have reached the borrow-limit!";
     }
 
     @Override
@@ -49,25 +47,20 @@ public class LibraryMgmtServiceImpl implements LibraryMgmtService{
     }
 
     @Override
-    public UsersWithBooks fetchUsersWithBooksById(long id) {
-        return usersWithBooksRepo.findById(id).get();
+    public UsersWithBooks fetchUsersWithBooksById(Long id) {
+        if(usersWithBooksRepo.findById(id).isPresent())
+            return usersWithBooksRepo.findById(id).get();
+        return null;
     }
 
     @Override
-    public void deleteUsersWithBooksById(Long id) {
-        usersWithBooksRepo.deleteByBookId(id);
-    }
-
-    @Override
-    public UsersWithBooks updateUsersWithBooks(long id, UsersWithBooks usersWithBooks) {
-        UsersWithBooks usersWithBooksDB = usersWithBooksRepo.findById(id).get();
-
-        if(Objects.nonNull(usersWithBooks.getBookId()) && !"".equals(usersWithBooks.getBookId()))
-            usersWithBooksDB.setBookId(usersWithBooks.getBookId());
-        if(Objects.nonNull(usersWithBooks.getUserName()) && !"".equals(usersWithBooks.getUserName()))
-            usersWithBooksDB.setUserName(usersWithBooks.getUserName());
-
-        return usersWithBooksRepo.save(usersWithBooksDB);
+    public String deleteUsersWithBooksById(Long id) {
+        UsersWithBooks usersWithBooks = fetchUsersWithBooksById(id);
+        if(null != usersWithBooks && unSubscribeBook(usersWithBooks.getBookId())){
+            usersWithBooksRepo.deleteById(id);
+            return "Book returned successfully!";
+        }
+        return "You have not borrowed this book!";
     }
 
     @Override
@@ -105,14 +98,26 @@ public class LibraryMgmtServiceImpl implements LibraryMgmtService{
 
 
     @Override
-    public boolean subscribeBook(long bookId){
+    public boolean subscribeBook(Long bookId){
+        Optional<Books> booksOptional = booksRepo.findById(bookId);
+        if(booksOptional.isPresent() && booksOptional.get().getStockAvailable() > 0) {
+            Books booksDB = booksOptional.get();
+            booksDB.setStockAvailable(booksDB.getStockAvailable() - 1);
+            booksRepo.save(booksDB);
+        }
+        else
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public boolean unSubscribeBook(Long bookId){
         Optional<Books> booksOptional = booksRepo.findById(bookId);
         if(booksOptional.isPresent()) {
             Books booksDB = booksOptional.get();
-            if(booksDB.getStockAvailable() > 0) {
-                booksDB.setStockAvailable(booksDB.getStockAvailable() - 1);
-                booksRepo.save(booksDB);
-            }
+            booksDB.setStockAvailable(booksDB.getStockAvailable() + 1);
+            booksRepo.save(booksDB);
         }
         else
             return false;

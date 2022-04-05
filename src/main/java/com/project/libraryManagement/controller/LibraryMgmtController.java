@@ -17,12 +17,32 @@ public class LibraryMgmtController {
 
     @GetMapping("/")
     public String helloWorldLib(){
-        return "Hello from World Library!!! :D";
+        return "Welcome to Planet of Books!!! :D";
     }
 
-    @PostMapping("/saveUsersWithBooks")
+    @PostMapping("/saveBooks")  //1
+    public String saveBooks(@RequestBody Books books){
+        return libraryMgmtService.saveBooks(books);
+    }
+
+    @GetMapping("/fetchBooks")  //2
+    public List<Books> fetchBooks(){
+        return libraryMgmtService.fetchBooks();
+    }
+
+    @PostMapping("/saveUsersWithBooks") //3
     public String saveUsersWithBooks(@Valid @RequestBody UsersWithBooks usersWithBooks){
         return libraryMgmtService.saveUsersWithBooks(usersWithBooks);
+    }
+
+    @GetMapping("/fetchUsersWithBooks/userName/{name}") //4
+    public List<UsersWithBooks> fetchUsersWithBooksByName(@PathVariable("name") String name){
+        return libraryMgmtService.fetchUsersWithBooksByName(name);
+    }
+
+    @DeleteMapping("/deleteUsersWithBooks/{subscriptionId}")    //5
+    public String deleteUsersWithBooksById(@PathVariable("subscriptionId") Long id){
+        return libraryMgmtService.deleteUsersWithBooksById(id);
     }
 
     @GetMapping("/fetchUsersWithBooks")
@@ -33,33 +53,6 @@ public class LibraryMgmtController {
     @GetMapping("/fetchUsersWithBooks/{id}")
     public UsersWithBooks fetchUsersWithBooksById(@PathVariable("id") Long id){
         return libraryMgmtService.fetchUsersWithBooksById(id);
-    }
-
-    /*@GetMapping("/fetchUsersWithBooks/userName/{name}")
-    public UsersWithBooks fetchUsersWithBooksByName(@PathVariable("name") String name){
-        return libraryMgmtService.fetchUsersWithBooksByName(name);
-    }*/
-
-    @DeleteMapping("/deleteUsersWithBooks/{id}")
-    public String deleteUsersWithBooksById(@PathVariable("id") long id){
-        libraryMgmtService.deleteUsersWithBooksById(id);
-        return "Subscription removed successfully!";
-    }
-
-    @PutMapping("/updateUsersWithBooks/{id}")
-    public UsersWithBooks updateUsersWithBooks(@PathVariable("id") long id,
-                                               @RequestBody UsersWithBooks usersWithBooks){
-        return libraryMgmtService.updateUsersWithBooks(id, usersWithBooks);
-    }
-
-    @GetMapping("/fetchBooks")
-    public List<Books> fetchBooks(){
-        return libraryMgmtService.fetchBooks();
-    }
-
-    @PostMapping("/saveBooks")
-    public String saveBooks(@RequestBody Books books){
-        return libraryMgmtService.saveBooks(books);
     }
 
 }
