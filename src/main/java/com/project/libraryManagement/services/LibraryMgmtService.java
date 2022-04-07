@@ -2,6 +2,7 @@ package com.project.libraryManagement.services;
 
 import com.project.libraryManagement.entities.Books;
 import com.project.libraryManagement.entities.UsersWithBooks;
+import com.project.libraryManagement.error.SubscriptionNotFoundException;
 
 import java.util.List;
 
@@ -10,9 +11,9 @@ public interface LibraryMgmtService {
 
     List<UsersWithBooks> fetchUsersWithBooks();
 
-    UsersWithBooks fetchUsersWithBooksById(Long id);
+    UsersWithBooks fetchUsersWithBooksById(Long id) throws SubscriptionNotFoundException;
 
-    String deleteUsersWithBooksById(Long id);
+    String deleteUsersWithBooksById(Long id) throws SubscriptionNotFoundException;
 
     List<UsersWithBooks> fetchUsersWithBooksByName(String name);
 

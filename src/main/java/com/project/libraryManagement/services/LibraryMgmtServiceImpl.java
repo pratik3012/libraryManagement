@@ -1,7 +1,9 @@
 package com.project.libraryManagement.services;
 
+import com.project.libraryManagement.Utils.Application_Constants;
 import com.project.libraryManagement.entities.Books;
 import com.project.libraryManagement.entities.UsersWithBooks;
+import com.project.libraryManagement.error.SubscriptionNotFoundException;
 import com.project.libraryManagement.repositories.BooksRepo;
 import com.project.libraryManagement.repositories.UsersWithBooksRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +31,16 @@ public class LibraryMgmtServiceImpl implements LibraryMgmtService{
                 if((0 == usersWithBooksList.size() || !usersWithBooks.getBookId().equals(usersWithBooksList.get(0).getBookId()))
                     && subscribeBook(usersWithBooks.getBookId())){
                     usersWithBooksRepo.save(usersWithBooks);
-                    return "Book borrowed successfully!";
+                    return Application_Constants.BOOK_BORROWED;
                 }
                 else
-                    return "You have already borrowed this book!";
+                    return Application_Constants.BOOK_ALREADY_BORROWED;
             }
             else
-                return "Stock of this book is unavailable!";
+                return Application_Constants.STOCK_UNAVAILABLE;
         }
         else
-            return "You have reached the borrow-limit!";
+            return Application_Constants.LIMIT_REACHED;
     }
 
     @Override
@@ -47,20 +49,20 @@ public class LibraryMgmtServiceImpl implements LibraryMgmtService{
     }
 
     @Override
-    public UsersWithBooks fetchUsersWithBooksById(Long id) {
-        if(usersWithBooksRepo.findById(id).isPresent())
-            return usersWithBooksRepo.findById(id).get();
-        return null;
+    public UsersWithBooks fetchUsersWithBooksById(Long id) throws SubscriptionNotFoundException {
+        if(!usersWithBooksRepo.findById(id).isPresent())
+            throw new SubscriptionNotFoundException(Application_Constants.INVALID_SUB_ID);
+        return usersWithBooksRepo.findById(id).get();
     }
 
     @Override
-    public String deleteUsersWithBooksById(Long id) {
+    public String deleteUsersWithBooksById(Long id) throws SubscriptionNotFoundException {
         UsersWithBooks usersWithBooks = fetchUsersWithBooksById(id);
         if(null != usersWithBooks && unSubscribeBook(usersWithBooks.getBookId())){
             usersWithBooksRepo.deleteById(id);
-            return "Book returned successfully!";
+            return Application_Constants.BOOK_RETURNED;
         }
-        return "You have not borrowed this book!";
+        return Application_Constants.BOOK_NOT_BORROWED;
     }
 
     @Override
@@ -79,21 +81,21 @@ public class LibraryMgmtServiceImpl implements LibraryMgmtService{
         if(booksOptional.isPresent()) {
             Books booksDB = booksOptional.get();
             if(!booksDB.getBookName().equalsIgnoreCase(books.getBookName())){
-                return "Book Id already exists!";
+                return Application_Constants.BOOK_ID_EXISTS;
             }
             if(books.getStockAvailable() < 0){
-                return "Enter valid stock value!";
+                return Application_Constants.INVALID_STOCK_VALUE;
             }
             books.setStockAvailable(books.getStockAvailable() + booksDB.getStockAvailable());
             booksRepo.save(books);
-            return "Book/s updated successfully!";
+            return Application_Constants.BOOKS_UPDATED;
         }
         else if(books.getStockAvailable() > 0){
             booksRepo.save(books);
-            return "Book/s inserted successfully!";
+            return Application_Constants.BOOKS_INSERTED;
         }
         else
-            return "Book-stock entered is invalid!";
+            return Application_Constants.INVALID_STOCK_VALUE;
     }
 
 

@@ -2,6 +2,7 @@ package com.project.libraryManagement.controller;
 
 import com.project.libraryManagement.entities.Books;
 import com.project.libraryManagement.entities.UsersWithBooks;
+import com.project.libraryManagement.error.SubscriptionNotFoundException;
 import com.project.libraryManagement.services.LibraryMgmtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class LibraryMgmtController {
     }
 
     @DeleteMapping("/deleteUsersWithBooks/{subscriptionId}")    //5
-    public String deleteUsersWithBooksById(@PathVariable("subscriptionId") Long id){
+    public String deleteUsersWithBooksById(@PathVariable("subscriptionId") Long id) throws SubscriptionNotFoundException {
         return libraryMgmtService.deleteUsersWithBooksById(id);
     }
 
@@ -51,7 +52,7 @@ public class LibraryMgmtController {
     }
 
     @GetMapping("/fetchUsersWithBooks/{id}")
-    public UsersWithBooks fetchUsersWithBooksById(@PathVariable("id") Long id){
+    public UsersWithBooks fetchUsersWithBooksById(@PathVariable("id") Long id) throws SubscriptionNotFoundException {
         return libraryMgmtService.fetchUsersWithBooksById(id);
     }
 
