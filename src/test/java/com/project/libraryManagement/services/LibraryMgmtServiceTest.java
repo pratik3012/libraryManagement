@@ -38,16 +38,9 @@ class LibraryMgmtServiceTest {
                 .bookId(102L)
                 .build();
 
-        UsersWithBooks usersWithBooks3 = UsersWithBooks.builder()
-                .subscriptionId(3L)
-                .userName("Pooja")
-                .bookId(103L)
-                .build();
-
         List<UsersWithBooks> usersWithBooksList = new ArrayList<>();
         usersWithBooksList.add(usersWithBooks1);
         usersWithBooksList.add(usersWithBooks2);
-        usersWithBooksList.add(usersWithBooks3);
 
         Mockito.when(usersWithBooksRepo.findByUserNameIgnoreCase("Pratik")).thenReturn(usersWithBooksList);
     }
